@@ -153,6 +153,12 @@ if result:
         tld = "ie"
     elif english_accent == "Sudáfrica":
         tld = "co.za"
+    elif english_accent == "Alemania":
+        tld = "de"
+    elif english_accent == "Francia":
+        tld = "fr"
+    elif english_accent == "Dinamarca":
+        tld = "dk"
     
     
     def text_to_speech(input_language, output_language, text, tld):
