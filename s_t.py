@@ -245,7 +245,7 @@ div[data-testid="stAlert"] {
 
 with st.sidebar:
 
-```
+
 st.markdown(
     '<div class="sidebar-title">🎤 Traductor</div>',
     unsafe_allow_html=True
