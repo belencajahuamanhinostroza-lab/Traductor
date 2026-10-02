@@ -36,7 +36,6 @@ st.markdown("""
     box-sizing: border-box;
 }
 
-/* Fondo completo */
 html,
 body,
 [data-testid="stAppViewContainer"],
@@ -45,40 +44,36 @@ body,
 }
 
 .stApp {
-    background: linear-gradient(
-        135deg,
-        #ffd6e7 0%,
-        #fbcfe8 35%,
-        #dbeafe 70%,
-        #bae6fd 100%
-    );
+    background:
+        radial-gradient(circle at 10% 15%, rgba(220, 190, 245, 0.32), transparent 30%),
+        radial-gradient(circle at 90% 75%, rgba(255, 190, 190, 0.22), transparent 32%),
+        linear-gradient(
+            120deg,
+            #eee5f4 0%,
+            #f7f0ef 38%,
+            #fbf5eb 62%,
+            #fae9e8 100%
+        );
     background-attachment: fixed;
-    color: #000000;
+    color: #211b2d;
 }
 
-/* Mantener el degradado detrás de todo el contenido */
 [data-testid="stAppViewContainer"] {
-    background: linear-gradient(
-        135deg,
-        #ffd6e7 0%,
-        #fbcfe8 35%,
-        #dbeafe 70%,
-        #bae6fd 100%
-    );
-    background-attachment: fixed;
+    background: transparent;
 }
 
 [data-testid="stHeader"] {
     background: transparent;
 }
 
-/* Ocultar elementos innecesarios */
-#MainMenu {
-    visibility: hidden;
-}
+/* ============================================================
+   ESPACIO GENERAL — inspirado en la referencia
+   ============================================================ */
 
-footer {
-    visibility: hidden;
+[data-testid="stMainBlockContainer"] {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 28px 32px 70px 32px;
 }
 
 /* ============================================================
@@ -87,97 +82,79 @@ footer {
 
 html {
     scrollbar-width: thin;
-    scrollbar-color: #38bdf8 #fbcfe8;
+    scrollbar-color: #a855f7 #f1e8f5;
 }
 
 ::-webkit-scrollbar {
-    width: 12px;
+    width: 11px;
 }
 
 ::-webkit-scrollbar-track {
     background: linear-gradient(
         180deg,
-        #ffd6e7,
-        #dbeafe,
-        #bae6fd
+        #eee5f4,
+        #f7f0ef,
+        #fae9e8
     );
 }
 
 ::-webkit-scrollbar-thumb {
     background: linear-gradient(
         180deg,
-        #38bdf8,
-        #60a5fa,
-        #0ea5e9
+        #a855f7,
+        #ec4899
     );
     border-radius: 20px;
-    border: 2px solid #dbeafe;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(
-        180deg,
-        #0ea5e9,
-        #2563eb
-    );
+    border: 2px solid #f7f0ef;
 }
 
 /* ============================================================
-   CONTENEDOR PRINCIPAL EN GRILLA
-   ============================================================ */
-
-[data-testid="stMainBlockContainer"] {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding-left: 35px;
-    padding-right: 35px;
-}
-
-/* ============================================================
-   TÍTULO
+   TÍTULOS
    ============================================================ */
 
 .main-title {
-    text-align: center;
-    font-family: 'Poppins', sans-serif;
-    font-size: 46px;
+    text-align: left;
+    font-size: 44px;
+    line-height: 1.1;
     font-weight: 800;
-    color: #000000;
-    margin-top: 10px;
-    margin-bottom: 5px;
+    color: #211b2d;
+    margin: 35px auto 8px auto;
+    max-width: 760px;
 }
 
 .subtitle {
-    text-align: center;
-    font-size: 18px;
-    font-weight: 500;
-    color: #000000;
-    margin-bottom: 30px;
+    text-align: left;
+    font-size: 16px;
+    line-height: 1.65;
+    font-weight: 400;
+    color: #655d70;
+    margin: 0 auto 42px auto;
+    max-width: 760px;
 }
 
 /* ============================================================
-   TARJETAS CENTRADAS
+   CUADROS — contorno violeta/rosado suave
    ============================================================ */
 
 .card {
     width: 100%;
-    max-width: 900px;
-    margin: 0 auto 22px auto;
-    background: rgba(255,255,255,0.48);
-    border: 2px solid #38bdf8;
-    border-radius: 24px;
-    padding: 25px;
-    box-shadow: 0 0 10px rgba(56,189,248,0.22);
-    backdrop-filter: blur(12px);
-    color: #000000;
+    max-width: 760px;
+    margin: 0 auto 26px auto;
+    background: rgba(255,255,255,0.30);
+    border: 2px solid #b86bea;
+    border-radius: 18px;
+    padding: 24px 26px;
+    box-shadow: 0 8px 28px rgba(125, 74, 155, 0.08);
+    backdrop-filter: blur(10px);
+    color: #211b2d;
 }
 
 .card-title {
-    text-align: center;
-    font-size: 22px;
+    text-align: left;
+    font-size: 18px;
     font-weight: 700;
-    color: #000000;
-    margin-bottom: 15px;
+    color: #211b2d;
+    margin-bottom: 14px;
 }
 
 /* ============================================================
@@ -185,20 +162,52 @@ html {
    ============================================================ */
 
 .text-box {
-    background: rgba(255,255,255,0.72);
-    border: 2px solid #38bdf8;
-    border-radius: 17px;
-    padding: 20px;
-    font-size: 18px;
+    background: rgba(255,255,255,0.62);
+    border: 2px solid #c084e9;
+    border-radius: 14px;
+    padding: 17px 19px;
+    font-size: 16px;
+    line-height: 1.6;
     font-weight: 500;
-    color: #000000;
-    min-height: 70px;
-    text-align: center;
-    box-shadow: 0 0 7px rgba(56,189,248,0.18);
+    color: #211b2d;
+    min-height: 64px;
+    text-align: left;
+    box-shadow: none;
 }
 
 /* ============================================================
-   BOTONES
+   GRILLA DE IDIOMAS
+   ============================================================ */
+
+div[data-testid="stHorizontalBlock"] {
+    gap: 18px;
+}
+
+/* ============================================================
+   SELECTORES
+   ============================================================ */
+
+div[data-baseweb="select"] > div {
+    background: rgba(255,255,255,0.68);
+    border: 2px solid #b86bea;
+    border-radius: 12px;
+    color: #211b2d;
+    box-shadow: none;
+}
+
+div[data-baseweb="select"] * {
+    color: #211b2d;
+}
+
+label,
+.stSelectbox label,
+.stCheckbox label {
+    color: #211b2d !important;
+    font-weight: 500;
+}
+
+/* ============================================================
+   BOTÓN ESCUCHAR / BOTONES PRINCIPALES
    ============================================================ */
 
 div.stButton {
@@ -208,53 +217,55 @@ div.stButton {
 
 div.stButton > button {
     width: 100%;
-    max-width: 420px;
-    min-height: 55px;
-    border-radius: 18px;
-    border: 2px solid #38bdf8;
+    max-width: 360px;
+    min-height: 56px;
+    border-radius: 15px;
+    border: 2px solid #9f4ed6;
     background: linear-gradient(
         135deg,
-        #60a5fa,
-        #38bdf8
+        #a855f7,
+        #d946ef
     );
-    color: #000000;
-    font-size: 18px;
+    color: white;
+    font-size: 17px;
     font-weight: 700;
-    box-shadow: 0 0 8px rgba(56,189,248,0.25);
+    box-shadow: 0 8px 20px rgba(168, 85, 247, 0.20);
     transition: 0.25s;
 }
 
 div.stButton > button:hover {
     background: linear-gradient(
         135deg,
-        #93c5fd,
-        #38bdf8
+        #9333ea,
+        #ec4899
     );
-    border-color: #0ea5e9;
-    color: #000000;
+    border-color: #ec4899;
+    color: white;
     transform: translateY(-2px);
 }
 
-/* ============================================================
-   SELECTORES
-   ============================================================ */
-
-div[data-baseweb="select"] > div {
-    background: rgba(255,255,255,0.78);
-    border: 2px solid #38bdf8;
-    border-radius: 14px;
-    color: #000000;
-    box-shadow: none;
+/* Botón Bokeh de ESCUCHAR */
+.bk-btn {
+    border-radius: 15px !important;
+    border: 2px solid #9f4ed6 !important;
+    background: linear-gradient(
+        135deg,
+        #a855f7,
+        #d946ef
+    ) !important;
+    color: white !important;
+    font-family: 'Poppins', sans-serif !important;
+    font-weight: 700 !important;
+    box-shadow: 0 8px 20px rgba(168, 85, 247, 0.20) !important;
 }
 
-div[data-baseweb="select"] * {
-    color: #000000;
-}
-
-label,
-.stSelectbox label,
-.stCheckbox label {
-    color: #000000 !important;
+.bk-btn:hover {
+    background: linear-gradient(
+        135deg,
+        #9333ea,
+        #ec4899
+    ) !important;
+    border-color: #ec4899 !important;
 }
 
 /* ============================================================
@@ -262,14 +273,14 @@ label,
    ============================================================ */
 
 section[data-testid="stSidebar"] {
-    background: linear-gradient(
-        180deg,
-        #ffd6e7 0%,
-        #fbcfe8 40%,
-        #dbeafe 75%,
-        #bae6fd 100%
-    );
-    border-right: 2px solid #38bdf8;
+    background:
+        linear-gradient(
+            180deg,
+            #eee5f4 0%,
+            #f7f0ef 50%,
+            #fae9e8 100%
+        );
+    border-right: 1px solid #d8b4e8;
     box-shadow: none;
 }
 
@@ -279,15 +290,15 @@ section[data-testid="stSidebar"] > div {
 
 .sidebar-title {
     text-align: center;
-    font-size: 26px;
+    font-size: 24px;
     font-weight: 800;
-    color: #000000;
+    color: #211b2d;
 }
 
 .sidebar-text {
-    color: #000000;
+    color: #211b2d;
     line-height: 1.7;
-    font-size: 15px;
+    font-size: 14px;
     text-align: center;
 }
 
@@ -296,32 +307,32 @@ section[data-testid="stSidebar"] > div {
    ============================================================ */
 
 .result-title {
-    text-align: center;
-    font-size: 24px;
+    text-align: left;
+    font-size: 20px;
     font-weight: 700;
-    color: #000000;
+    color: #211b2d;
     margin-bottom: 12px;
 }
 
 .stCheckbox {
-    color: #000000;
+    color: #211b2d;
     font-weight: 500;
 }
-
-/* ============================================================
-   AUDIO
-   ============================================================ */
 
 audio {
     width: 100%;
 }
 
-/* ============================================================
-   ALERTAS
-   ============================================================ */
-
 div[data-testid="stAlert"] {
-    border-radius: 15px;
+    border-radius: 13px;
+}
+
+#MainMenu {
+    visibility: hidden;
+}
+
+footer {
+    visibility: hidden;
 }
 
 </style>
@@ -400,7 +411,7 @@ st.markdown(
 # IMAGEN
 # ============================================================
 
-col_img, col_info = st.columns([1, 1.5], gap="large")
+col_img, col_info = st.columns([0.9, 1.6], gap="large")
 
 with col_img:
 
@@ -408,7 +419,7 @@ with col_img:
 
     st.image(
         image,
-        width=300
+        width=280
     )
 
 
@@ -904,4 +915,5 @@ def remove_files(days):
 
 
 remove_files(7)
+
 
