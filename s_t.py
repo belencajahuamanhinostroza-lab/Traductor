@@ -33,6 +33,15 @@ st.markdown("""
 
 * {
     font-family: 'Poppins', sans-serif;
+    box-sizing: border-box;
+}
+
+/* Fondo completo */
+html,
+body,
+[data-testid="stAppViewContainer"],
+[data-testid="stApp"] {
+    min-height: 100%;
 }
 
 .stApp {
@@ -43,9 +52,27 @@ st.markdown("""
         #dbeafe 70%,
         #bae6fd 100%
     );
-    color: #164e63;
+    background-attachment: fixed;
+    color: #000000;
 }
 
+/* Mantener el degradado detrás de todo el contenido */
+[data-testid="stAppViewContainer"] {
+    background: linear-gradient(
+        135deg,
+        #ffd6e7 0%,
+        #fbcfe8 35%,
+        #dbeafe 70%,
+        #bae6fd 100%
+    );
+    background-attachment: fixed;
+}
+
+[data-testid="stHeader"] {
+    background: transparent;
+}
+
+/* Ocultar elementos innecesarios */
 #MainMenu {
     visibility: hidden;
 }
@@ -54,6 +81,57 @@ footer {
     visibility: hidden;
 }
 
+/* ============================================================
+   BARRA DE DESPLAZAMIENTO
+   ============================================================ */
+
+html {
+    scrollbar-width: thin;
+    scrollbar-color: #38bdf8 #fbcfe8;
+}
+
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: linear-gradient(
+        180deg,
+        #ffd6e7,
+        #dbeafe,
+        #bae6fd
+    );
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(
+        180deg,
+        #38bdf8,
+        #60a5fa,
+        #0ea5e9
+    );
+    border-radius: 20px;
+    border: 2px solid #dbeafe;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(
+        180deg,
+        #0ea5e9,
+        #2563eb
+    );
+}
+
+/* ============================================================
+   CONTENEDOR PRINCIPAL EN GRILLA
+   ============================================================ */
+
+[data-testid="stMainBlockContainer"] {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-left: 35px;
+    padding-right: 35px;
+}
 
 /* ============================================================
    TÍTULO
@@ -64,69 +142,73 @@ footer {
     font-family: 'Poppins', sans-serif;
     font-size: 46px;
     font-weight: 800;
-    color: #164e63;
+    color: #000000;
     margin-top: 10px;
     margin-bottom: 5px;
-    text-shadow: 0 0 12px rgba(34,211,238,0.35);
 }
 
 .subtitle {
     text-align: center;
     font-size: 18px;
     font-weight: 500;
-    color: #475569;
+    color: #000000;
     margin-bottom: 30px;
 }
 
-
 /* ============================================================
-   TARJETAS
+   TARJETAS CENTRADAS
    ============================================================ */
 
 .card {
-    background: rgba(255,255,255,0.55);
-    border: 2px solid #67e8f9;
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto 22px auto;
+    background: rgba(255,255,255,0.48);
+    border: 2px solid #38bdf8;
     border-radius: 24px;
     padding: 25px;
-    margin-bottom: 22px;
-    box-shadow:
-        0 0 8px rgba(34,211,238,0.75),
-        0 0 20px rgba(34,211,238,0.35);
+    box-shadow: 0 0 10px rgba(56,189,248,0.22);
     backdrop-filter: blur(12px);
+    color: #000000;
 }
 
 .card-title {
+    text-align: center;
     font-size: 22px;
     font-weight: 700;
-    color: #164e63;
+    color: #000000;
     margin-bottom: 15px;
 }
 
-
 /* ============================================================
-   TEXTO
+   CAJAS DE TEXTO
    ============================================================ */
 
 .text-box {
-    background: rgba(255,255,255,0.78);
-    border: 2px solid #67e8f9;
+    background: rgba(255,255,255,0.72);
+    border: 2px solid #38bdf8;
     border-radius: 17px;
     padding: 20px;
     font-size: 18px;
     font-weight: 500;
-    color: #334155;
+    color: #000000;
     min-height: 70px;
-    box-shadow:
-        0 0 7px rgba(34,211,238,0.55);
+    text-align: center;
+    box-shadow: 0 0 7px rgba(56,189,248,0.18);
 }
-
 
 /* ============================================================
    BOTONES
    ============================================================ */
 
+div.stButton {
+    display: flex;
+    justify-content: center;
+}
+
 div.stButton > button {
     width: 100%;
+    max-width: 420px;
     min-height: 55px;
     border-radius: 18px;
     border: 2px solid #38bdf8;
@@ -135,42 +217,45 @@ div.stButton > button {
         #60a5fa,
         #38bdf8
     );
-    color: white;
+    color: #000000;
     font-size: 18px;
     font-weight: 700;
-    box-shadow:
-        0 0 8px rgba(56,189,248,0.75),
-        0 5px 18px rgba(37,99,235,0.30);
+    box-shadow: 0 0 8px rgba(56,189,248,0.25);
     transition: 0.25s;
 }
 
 div.stButton > button:hover {
     background: linear-gradient(
         135deg,
-        #3b82f6,
-        #0ea5e9
+        #93c5fd,
+        #38bdf8
     );
-    border-color: #22d3ee;
-    box-shadow:
-        0 0 12px #22d3ee,
-        0 0 25px rgba(34,211,238,0.55);
+    border-color: #0ea5e9;
+    color: #000000;
     transform: translateY(-2px);
 }
-
 
 /* ============================================================
    SELECTORES
    ============================================================ */
 
 div[data-baseweb="select"] > div {
-    background: rgba(255,255,255,0.80);
-    border: 2px solid #67e8f9;
+    background: rgba(255,255,255,0.78);
+    border: 2px solid #38bdf8;
     border-radius: 14px;
-    color: #164e63;
-    box-shadow:
-        0 0 6px rgba(34,211,238,0.45);
+    color: #000000;
+    box-shadow: none;
 }
 
+div[data-baseweb="select"] * {
+    color: #000000;
+}
+
+label,
+.stSelectbox label,
+.stCheckbox label {
+    color: #000000 !important;
+}
 
 /* ============================================================
    SIDEBAR
@@ -179,48 +264,57 @@ div[data-baseweb="select"] > div {
 section[data-testid="stSidebar"] {
     background: linear-gradient(
         180deg,
-        #fbcfe8 0%,
-        #dbeafe 100%
+        #ffd6e7 0%,
+        #fbcfe8 40%,
+        #dbeafe 75%,
+        #bae6fd 100%
     );
-    border-right: 2px solid #67e8f9;
-    box-shadow:
-        0 0 15px rgba(34,211,238,0.35);
+    border-right: 2px solid #38bdf8;
+    box-shadow: none;
+}
+
+section[data-testid="stSidebar"] > div {
+    background: transparent;
 }
 
 .sidebar-title {
+    text-align: center;
     font-size: 26px;
     font-weight: 800;
-    color: #164e63;
+    color: #000000;
 }
 
 .sidebar-text {
-    color: #334155;
+    color: #000000;
     line-height: 1.7;
     font-size: 15px;
+    text-align: center;
 }
 
-
 /* ============================================================
-   RESULTADO
+   RESULTADOS
    ============================================================ */
 
 .result-title {
+    text-align: center;
     font-size: 24px;
     font-weight: 700;
-    color: #0891b2;
+    color: #000000;
     margin-bottom: 12px;
 }
 
-
-/* ============================================================
-   CHECKBOX
-   ============================================================ */
-
 .stCheckbox {
-    color: #164e63;
+    color: #000000;
     font-weight: 500;
 }
 
+/* ============================================================
+   AUDIO
+   ============================================================ */
+
+audio {
+    width: 100%;
+}
 
 /* ============================================================
    ALERTAS
@@ -306,7 +400,7 @@ st.markdown(
 # IMAGEN
 # ============================================================
 
-col_img, col_info = st.columns([1, 1.5])
+col_img, col_info = st.columns([1, 1.5], gap="large")
 
 with col_img:
 
@@ -810,3 +904,4 @@ def remove_files(days):
 
 
 remove_files(7)
+
