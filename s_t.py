@@ -9,27 +9,24 @@ from PIL import Image
 from gtts import gTTS
 from googletrans import Translator
 
+
 # ============================================================
-
 # CONFIGURACIÓN
-
 # ============================================================
 
 st.set_page_config(
-page_title="Traductor por Voz",
-page_icon="🎤",
-layout="wide",
-initial_sidebar_state="expanded"
+    page_title="Traductor por Voz",
+    page_icon="🎤",
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
+
 # ============================================================
-
 # DISEÑO
-
 # ============================================================
 
 st.markdown("""
-
 <style>
 
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
@@ -234,646 +231,582 @@ div[data-testid="stAlert"] {
 }
 
 </style>
-
 """, unsafe_allow_html=True)
 
+
 # ============================================================
-
 # SIDEBAR
-
 # ============================================================
 
 with st.sidebar:
 
-st.markdown(
-    '<div class="sidebar-title">🎤 Traductor</div>',
-    unsafe_allow_html=True
-)
+    st.markdown(
+        '<div class="sidebar-title">🎤 Traductor</div>',
+        unsafe_allow_html=True
+    )
 
-st.markdown("---")
+    st.markdown("---")
 
-st.markdown(
-    """
-    <div class="sidebar-text">
+    st.markdown(
+        """
+        <div class="sidebar-text">
 
-    <b>¿Cómo utilizar la aplicación?</b>
+        <b>¿Cómo utilizar la aplicación?</b>
 
-    <br><br>
+        <br><br>
 
-    1. Presiona el botón <b>Escuchar</b>.
+        1. Presiona el botón <b>Escuchar</b>.
 
-    <br><br>
+        <br><br>
 
-    2. Habla claramente.
+        2. Habla claramente.
 
-    <br><br>
+        <br><br>
 
-    3. Selecciona el idioma de entrada.
+        3. Selecciona el idioma de entrada.
 
-    <br><br>
+        <br><br>
 
-    4. Selecciona el idioma de salida.
+        4. Selecciona el idioma de salida.
 
-    <br><br>
+        <br><br>
 
-    5. Presiona <b>Convertir y traducir</b>.
+        5. Presiona <b>Convertir y traducir</b>.
 
-    <br><br>
+        <br><br>
 
-    6. Escucha el resultado.
+        6. Escucha el resultado.
 
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
-st.markdown("---")
+    st.markdown("---")
 
-st.caption("🌎 Traducción por voz")
-```
+    st.caption("🌎 Traducción por voz")
+
 
 # ============================================================
-
 # ENCABEZADO
-
 # ============================================================
 
 st.markdown(
-'<div class="main-title">🌎 TRADUCTOR POR VOZ</div>',
-unsafe_allow_html=True
+    '<div class="main-title">🌎 TRADUCTOR POR VOZ</div>',
+    unsafe_allow_html=True
 )
 
 st.markdown(
-'<div class="subtitle">Escucha, traduce y reproduce tu traducción fácilmente</div>',
-unsafe_allow_html=True
+    '<div class="subtitle">Escucha, traduce y reproduce tu traducción fácilmente</div>',
+    unsafe_allow_html=True
 )
 
-# ============================================================
 
+# ============================================================
 # IMAGEN
-
 # ============================================================
 
 col_img, col_info = st.columns([1, 1.5])
 
 with col_img:
 
-```
-image = Image.open("traduccion.jpg")
+    image = Image.open("traduccion.jpg")
 
-st.image(
-    image,
-    width=300
-)
-```
+    st.image(
+        image,
+        width=300
+    )
+
 
 with col_info:
 
-```
+    st.markdown(
+        """
+        <div class="card">
+
+        <div class="card-title">
+        🎙️ Habla para traducir
+        </div>
+
+        <div class="text-box">
+        Presiona el botón y habla lo que deseas traducir.
+        La aplicación reconocerá tu voz y posteriormente
+        convertirá el texto al idioma seleccionado.
+        </div>
+
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+# ============================================================
+# RECONOCIMIENTO DE VOZ
+# ============================================================
+
 st.markdown(
     """
     <div class="card">
 
     <div class="card-title">
-    🎙️ Habla para traducir
-    </div>
-
-    <div class="text-box">
-    Presiona el botón y habla lo que deseas traducir.
-    La aplicación reconocerá tu voz y posteriormente
-    convertirá el texto al idioma seleccionado.
-    </div>
-
+    🎤 Reconocimiento de voz
     </div>
     """,
     unsafe_allow_html=True
 )
-```
-
-# ============================================================
-
-# RECONOCIMIENTO DE VOZ
-
-# ============================================================
-
-st.markdown(
-""" <div class="card">
-
-```
-<div class="card-title">
-🎤 Reconocimiento de voz
-</div>
-""",
-unsafe_allow_html=True
-```
-
-)
 
 stt_button = Button(
-label="🎤  ESCUCHAR",
-width=300,
-height=55
+    label="🎤  ESCUCHAR",
+    width=300,
+    height=55
 )
 
 stt_button.js_on_event(
-"button_click",
-CustomJS(
-code="""
+    "button_click",
+    CustomJS(
+        code="""
+        var recognition = new webkitSpeechRecognition();
 
-```
-    var recognition =
-        new webkitSpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = true;
+        recognition.lang = 'es-ES';
 
-    recognition.continuous = false;
+        recognition.onresult = function(e) {
 
-    recognition.interimResults = true;
+            var value = "";
 
-    recognition.lang = 'es-ES';
+            for (
+                var i = e.resultIndex;
+                i < e.results.length;
+                ++i
+            ) {
 
+                if (e.results[i].isFinal) {
 
-    recognition.onresult = function(e) {
+                    value += e.results[i][0].transcript;
 
-        var value = "";
-
-        for (
-            var i = e.resultIndex;
-            i < e.results.length;
-            ++i
-        ) {
-
-            if (e.results[i].isFinal) {
-
-                value += e.results[i][0].transcript;
+                }
 
             }
 
-        }
+            if (value != "") {
 
+                document.dispatchEvent(
+                    new CustomEvent(
+                        "GET_TEXT",
+                        {
+                            detail: value
+                        }
+                    )
+                );
 
-        if (value != "") {
+            }
 
-            document.dispatchEvent(
-                new CustomEvent(
-                    "GET_TEXT",
-                    {
-                        detail: value
-                    }
-                )
+        };
+
+        recognition.onend = function() {
+
+            console.log(
+                "Reconocimiento detenido"
             );
 
-        }
+        };
 
-    };
+        recognition.onerror = function(event) {
 
+            console.log(
+                "Error:",
+                event.error
+            );
 
-    recognition.onend = function() {
+        };
 
-        console.log(
-            "Reconocimiento detenido"
-        );
-
-    };
-
-
-    recognition.onerror = function(event) {
-
-        console.log(
-            "Error:",
-            event.error
-        );
-
-    };
-
-
-    recognition.start();
-
-    """
-)
-```
-
+        recognition.start();
+        """
+    )
 )
 
 result = streamlit_bokeh_events(
-stt_button,
-events="GET_TEXT",
-key="listen",
-refresh_on_update=False,
-override_height=75,
-debounce_time=0
+    stt_button,
+    events="GET_TEXT",
+    key="listen",
+    refresh_on_update=False,
+    override_height=75,
+    debounce_time=0
 )
 
 st.markdown(
-"</div>",
-unsafe_allow_html=True
+    "</div>",
+    unsafe_allow_html=True
 )
 
+
 # ============================================================
-
 # SI SE RECONOCIÓ VOZ
-
 # ============================================================
 
 if result and "GET_TEXT" in result:
 
-```
-text = str(
-    result.get("GET_TEXT")
-)
-
-
-# ========================================================
-# TEXTO RECONOCIDO
-# ========================================================
-
-st.markdown(
-    """
-    <div class="card">
-
-    <div class="card-title">
-    📝 Texto reconocido
-    </div>
-    """,
-    unsafe_allow_html=True
-)
-
-
-st.markdown(
-    f"""
-    <div class="text-box">
-    {text}
-    </div>
-    """,
-    unsafe_allow_html=True
-)
-
-
-st.markdown(
-    "</div>",
-    unsafe_allow_html=True
-)
-
-
-# ========================================================
-# CARPETA DE AUDIOS
-# ========================================================
-
-os.makedirs(
-    "temp",
-    exist_ok=True
-)
-
-
-translator = Translator()
-
-
-# ========================================================
-# IDIOMAS
-# ========================================================
-
-language_codes = {
-    "Inglés": "en",
-    "Español": "es",
-    "Francés": "fr",
-    "Coreano": "ko",
-    "Mandarín": "zh-cn",
-    "Japonés": "ja",
-    "Alemán": "de",
-    "Danés": "da"
-}
-
-
-languages = list(
-    language_codes.keys()
-)
-
-
-# ========================================================
-# CONFIGURACIÓN
-# ========================================================
-
-st.markdown(
-    """
-    <div class="card">
-
-    <div class="card-title">
-    🌎 Configuración de traducción
-    </div>
-    """,
-    unsafe_allow_html=True
-)
-
-
-# ========================================================
-# COLUMNAS DE IDIOMAS
-# ========================================================
-
-col1, col2 = st.columns(2)
-
-
-with col1:
-
-    in_lang = st.selectbox(
-        "🗣️ Idioma de entrada",
-        languages,
-        key="input_language"
+    text = str(
+        result.get("GET_TEXT")
     )
 
 
-with col2:
+    # ========================================================
+    # TEXTO RECONOCIDO
+    # ========================================================
 
-    out_lang = st.selectbox(
-        "🌎 Idioma de salida",
-        languages,
-        key="output_language"
+    st.markdown(
+        """
+        <div class="card">
+
+        <div class="card-title">
+        📝 Texto reconocido
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        f"""
+        <div class="text-box">
+        {text}
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        "</div>",
+        unsafe_allow_html=True
     )
 
 
-input_language = language_codes[
-    in_lang
-]
+    # ========================================================
+    # CARPETA DE AUDIOS
+    # ========================================================
 
-output_language = language_codes[
-    out_lang
-]
+    os.makedirs(
+        "temp",
+        exist_ok=True
+    )
 
-
-# ========================================================
-# ACENTO
-# ========================================================
-
-english_accent = st.selectbox(
-    "🔊 Selecciona el acento",
-    [
-        "Defecto",
-        "Español",
-        "Reino Unido",
-        "Estados Unidos",
-        "Canada",
-        "Australia",
-        "Irlanda",
-        "Sudáfrica",
-        "Dinamarca",
-        "Francia"
-    ],
-    key="accent"
-)
+    translator = Translator()
 
 
-accent_codes = {
+    # ========================================================
+    # IDIOMAS
+    # ========================================================
 
-    "Defecto": "com",
-    "Español": "com.mx",
-    "Reino Unido": "co.uk",
-    "Estados Unidos": "com",
-    "Canada": "ca",
-    "Australia": "com.au",
-    "Irlanda": "ie",
-    "Sudáfrica": "co.za",
-    "Dinamarca": "dk",
-    "Francia": "fr"
+    language_codes = {
+        "Inglés": "en",
+        "Español": "es",
+        "Francés": "fr",
+        "Coreano": "ko",
+        "Mandarín": "zh-cn",
+        "Japonés": "ja",
+        "Alemán": "de",
+        "Danés": "da"
+    }
 
-}
-
-
-tld = accent_codes[
-    english_accent
-]
-
-
-st.markdown(
-    "</div>",
-    unsafe_allow_html=True
-)
+    languages = list(
+        language_codes.keys()
+    )
 
 
-# ========================================================
-# FUNCIÓN DE TRADUCCIÓN
-# ========================================================
+    # ========================================================
+    # CONFIGURACIÓN
+    # ========================================================
 
-def text_to_speech(
-    input_language,
-    output_language,
-    text,
-    tld
-):
+    st.markdown(
+        """
+        <div class="card">
 
-    translation = translator.translate(
+        <div class="card-title">
+        🌎 Configuración de traducción
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+    # ========================================================
+    # COLUMNAS DE IDIOMAS
+    # ========================================================
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+
+        in_lang = st.selectbox(
+            "🗣️ Idioma de entrada",
+            languages,
+            key="input_language"
+        )
+
+    with col2:
+
+        out_lang = st.selectbox(
+            "🌎 Idioma de salida",
+            languages,
+            key="output_language"
+        )
+
+    input_language = language_codes[
+        in_lang
+    ]
+
+    output_language = language_codes[
+        out_lang
+    ]
+
+
+    # ========================================================
+    # ACENTO
+    # ========================================================
+
+    english_accent = st.selectbox(
+        "🔊 Selecciona el acento",
+        [
+            "Defecto",
+            "Español",
+            "Reino Unido",
+            "Estados Unidos",
+            "Canada",
+            "Australia",
+            "Irlanda",
+            "Sudáfrica",
+            "Dinamarca",
+            "Francia"
+        ],
+        key="accent"
+    )
+
+    accent_codes = {
+        "Defecto": "com",
+        "Español": "com.mx",
+        "Reino Unido": "co.uk",
+        "Estados Unidos": "com",
+        "Canada": "ca",
+        "Australia": "com.au",
+        "Irlanda": "ie",
+        "Sudáfrica": "co.za",
+        "Dinamarca": "dk",
+        "Francia": "fr"
+    }
+
+    tld = accent_codes[
+        english_accent
+    ]
+
+    st.markdown(
+        "</div>",
+        unsafe_allow_html=True
+    )
+
+
+    # ========================================================
+    # FUNCIÓN DE TRADUCCIÓN
+    # ========================================================
+
+    def text_to_speech(
+        input_language,
+        output_language,
         text,
-        src=input_language,
-        dest=output_language
+        tld
+    ):
+
+        translation = translator.translate(
+            text,
+            src=input_language,
+            dest=output_language
+        )
+
+        translated_text = translation.text
+
+        tts = gTTS(
+            translated_text,
+            lang=output_language,
+            tld=tld,
+            slow=False
+        )
+
+        file_name = text[:20]
+
+        file_name = "".join(
+            character
+            for character in file_name
+            if character.isalnum()
+            or character in (" ", "_", "-")
+        )
+
+        if not file_name:
+
+            file_name = "audio"
+
+        file_name = file_name.replace(
+            " ",
+            "_"
+        )
+
+        file_path = (
+            f"temp/{file_name}.mp3"
+        )
+
+        tts.save(
+            file_path
+        )
+
+        return (
+            file_name,
+            translated_text
+        )
+
+
+    # ========================================================
+    # OPCIÓN MOSTRAR TEXTO
+    # ========================================================
+
+    display_output_text = st.checkbox(
+        "📝 Mostrar el texto traducido",
+        key="show_translation"
     )
 
 
-    translated_text = translation.text
+    # ========================================================
+    # BOTÓN CONVERTIR
+    # ========================================================
 
+    if st.button(
+        "🌎 CONVERTIR Y TRADUCIR",
+        type="primary",
+        key="translate_button"
+    ):
 
-    tts = gTTS(
-        translated_text,
-        lang=output_language,
-        tld=tld,
-        slow=False
-    )
+        try:
 
+            with st.spinner(
+                "Traduciendo..."
+            ):
 
-    file_name = text[:20]
+                result_file, output_text = text_to_speech(
+                    input_language,
+                    output_language,
+                    text,
+                    tld
+                )
 
-
-    file_name = "".join(
-        character
-        for character in file_name
-        if character.isalnum()
-        or character in (" ", "_", "-")
-    )
-
-
-    if not file_name:
-
-        file_name = "audio"
-
-
-    file_name = file_name.replace(
-        " ",
-        "_"
-    )
-
-
-    file_path = (
-        f"temp/{file_name}.mp3"
-    )
-
-
-    tts.save(
-        file_path
-    )
-
-
-    return (
-        file_name,
-        translated_text
-    )
-
-
-# ========================================================
-# OPCIÓN MOSTRAR TEXTO
-# ========================================================
-
-display_output_text = st.checkbox(
-    "📝 Mostrar el texto traducido",
-    key="show_translation"
-)
-
-
-# ========================================================
-# BOTÓN CONVERTIR
-# ========================================================
-
-if st.button(
-    "🌎 CONVERTIR Y TRADUCIR",
-    type="primary",
-    key="translate_button"
-):
-
-    try:
-
-        with st.spinner(
-            "Traduciendo..."
-        ):
-
-            result_file, output_text = text_to_speech(
-                input_language,
-                output_language,
-                text,
-                tld
+            st.success(
+                "¡Traducción realizada correctamente!"
             )
 
 
-        st.success(
-            "¡Traducción realizada correctamente!"
-        )
-
-
-        # =================================================
-        # AUDIO
-        # =================================================
-
-        st.markdown(
-            """
-            <div class="card">
-
-            <div class="result-title">
-            🔊 Tu audio
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-
-        audio_path = (
-            f"temp/{result_file}.mp3"
-        )
-
-
-        with open(
-            audio_path,
-            "rb"
-        ) as audio_file:
-
-            audio_bytes = audio_file.read()
-
-
-        st.audio(
-            audio_bytes,
-            format="audio/mp3"
-        )
-
-
-        # =================================================
-        # TEXTO DE SALIDA
-        # =================================================
-
-        if display_output_text:
-
-            st.markdown(
-                "<hr>",
-                unsafe_allow_html=True
-            )
-
+            # =================================================
+            # AUDIO
+            # =================================================
 
             st.markdown(
                 """
+                <div class="card">
+
                 <div class="result-title">
-                📝 Texto de salida
+                🔊 Tu audio
                 </div>
                 """,
                 unsafe_allow_html=True
             )
 
+            audio_path = (
+                f"temp/{result_file}.mp3"
+            )
+
+            with open(
+                audio_path,
+                "rb"
+            ) as audio_file:
+
+                audio_bytes = audio_file.read()
+
+            st.audio(
+                audio_bytes,
+                format="audio/mp3"
+            )
+
+
+            # =================================================
+            # TEXTO DE SALIDA
+            # =================================================
+
+            if display_output_text:
+
+                st.markdown(
+                    "<hr>",
+                    unsafe_allow_html=True
+                )
+
+                st.markdown(
+                    """
+                    <div class="result-title">
+                    📝 Texto de salida
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+
+                st.markdown(
+                    f"""
+                    <div class="text-box">
+                    {output_text}
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
 
             st.markdown(
-                f"""
-                <div class="text-box">
-                {output_text}
-                </div>
-                """,
+                "</div>",
                 unsafe_allow_html=True
             )
 
 
-        st.markdown(
-            "</div>",
-            unsafe_allow_html=True
-        )
+        except Exception as error:
 
+            st.error(
+                "Ocurrió un error al realizar la traducción."
+            )
 
-    except Exception as error:
+            st.warning(
+                f"Detalles: {error}"
+            )
 
-        st.error(
-            "Ocurrió un error al realizar la traducción."
-        )
-
-        st.warning(
-            f"Detalles: {error}"
-        )
-```
 
 # ============================================================
-
 # LIMPIAR AUDIOS ANTIGUOS
-
 # ============================================================
 
 def remove_files(days):
 
-```
-if not os.path.exists("temp"):
-    return
+    if not os.path.exists("temp"):
+        return
 
+    files = glob.glob(
+        "temp/*.mp3"
+    )
 
-files = glob.glob(
-    "temp/*.mp3"
-)
+    current_time = time.time()
 
+    max_age = days * 86400
 
-current_time = time.time()
+    for file in files:
 
+        try:
 
-max_age = days * 86400
+            if os.stat(file).st_mtime < current_time - max_age:
 
+                os.remove(file)
 
-for file in files:
+        except Exception:
 
-    try:
+            pass
 
-        if os.stat(file).st_mtime < current_time - max_age:
-
-            os.remove(file)
-
-    except Exception:
-
-        pass
-```
 
 remove_files(7)
-
-
-
