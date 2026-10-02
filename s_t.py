@@ -3,8 +3,7 @@ import glob
 import time
 import streamlit as st
 
-from bokeh.models.widgets import Button
-from bokeh.models import CustomJS
+from bokeh.models import Button, CustomJS
 from streamlit_bokeh_events import streamlit_bokeh_events
 from PIL import Image
 from gtts import gTTS
@@ -25,7 +24,7 @@ initial_sidebar_state="expanded"
 
 # ============================================================
 
-# ESTILOS
+# DISEÑO
 
 # ============================================================
 
@@ -33,50 +32,22 @@ st.markdown("""
 
 <style>
 
-/* ==========================================================
-   IMPORTAR FUENTE POPPINS
-   ========================================================== */
-
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
 
-
-/* ==========================================================
-   FONDO PRINCIPAL
-   ========================================================== */
+* {
+    font-family: 'Poppins', sans-serif;
+}
 
 .stApp {
-
-    background:
-        linear-gradient(
-            135deg,
-            #ffd6e7 0%,
-            #fbcfe8 25%,
-            #dbeafe 65%,
-            #bae6fd 100%
-        );
-
-    color: #172554;
-
-    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(
+        135deg,
+        #ffd6e7 0%,
+        #fbcfe8 35%,
+        #dbeafe 70%,
+        #bae6fd 100%
+    );
+    color: #164e63;
 }
-
-
-/* ==========================================================
-   FUENTE GENERAL
-   ========================================================== */
-
-html,
-body,
-[class*="css"] {
-
-    font-family: 'Poppins', sans-serif;
-
-}
-
-
-/* ==========================================================
-   OCULTAR ELEMENTOS DE STREAMLIT
-   ========================================================== */
 
 #MainMenu {
     visibility: hidden;
@@ -87,344 +58,179 @@ footer {
 }
 
 
-/* ==========================================================
-   TÍTULO PRINCIPAL
-   ========================================================== */
+/* ============================================================
+   TÍTULO
+   ============================================================ */
 
 .main-title {
-
     text-align: center;
-
     font-family: 'Poppins', sans-serif;
-
     font-size: 46px;
-
     font-weight: 800;
-
     color: #164e63;
-
-    margin-top: 15px;
-
+    margin-top: 10px;
     margin-bottom: 5px;
-
-    letter-spacing: 1px;
-
-    text-shadow:
-        0 2px 10px rgba(34,211,238,0.35);
-
+    text-shadow: 0 0 12px rgba(34,211,238,0.35);
 }
-
 
 .subtitle {
-
     text-align: center;
-
-    font-family: 'Poppins', sans-serif;
-
     font-size: 18px;
-
     font-weight: 500;
-
     color: #475569;
-
     margin-bottom: 30px;
-
 }
 
 
-/* ==========================================================
-   TARJETAS / RECUADROS
-   ========================================================== */
+/* ============================================================
+   TARJETAS
+   ============================================================ */
 
 .card {
-
     background: rgba(255,255,255,0.55);
-
     border: 2px solid #67e8f9;
-
     border-radius: 24px;
-
     padding: 25px;
-
     margin-bottom: 22px;
-
     box-shadow:
-        0 0 8px rgba(34,211,238,0.70),
+        0 0 8px rgba(34,211,238,0.75),
         0 0 20px rgba(34,211,238,0.35);
-
     backdrop-filter: blur(12px);
-
 }
-
-
-/* ==========================================================
-   TÍTULOS DE LOS RECUADROS
-   ========================================================== */
 
 .card-title {
-
-    font-family: 'Poppins', sans-serif;
-
     font-size: 22px;
-
     font-weight: 700;
-
     color: #164e63;
-
     margin-bottom: 15px;
-
 }
 
 
-/* ==========================================================
-   CAJAS DE TEXTO
-   ========================================================== */
+/* ============================================================
+   TEXTO
+   ============================================================ */
 
 .text-box {
-
-    background: rgba(255,255,255,0.72);
-
+    background: rgba(255,255,255,0.78);
     border: 2px solid #67e8f9;
-
     border-radius: 17px;
-
     padding: 20px;
-
-    font-family: 'Poppins', sans-serif;
-
     font-size: 18px;
-
     font-weight: 500;
-
     color: #334155;
-
-    min-height: 75px;
-
+    min-height: 70px;
     box-shadow:
         0 0 7px rgba(34,211,238,0.55);
-
 }
 
 
-/* ==========================================================
-   BOTÓN ESCUCHAR
-   ========================================================== */
+/* ============================================================
+   BOTONES
+   ============================================================ */
 
 div.stButton > button {
-
     width: 100%;
-
-    height: 58px;
-
+    min-height: 55px;
     border-radius: 18px;
-
     border: 2px solid #38bdf8;
-
-    background:
-        linear-gradient(
-            135deg,
-            #60a5fa,
-            #38bdf8
-        );
-
+    background: linear-gradient(
+        135deg,
+        #60a5fa,
+        #38bdf8
+    );
     color: white;
-
-    font-family: 'Poppins', sans-serif;
-
     font-size: 18px;
-
     font-weight: 700;
-
     box-shadow:
         0 0 8px rgba(56,189,248,0.75),
         0 5px 18px rgba(37,99,235,0.30);
-
-    transition: all 0.25s ease;
-
+    transition: 0.25s;
 }
 
-
-/* ==========================================================
-   EFECTO DEL BOTÓN
-   ========================================================== */
-
 div.stButton > button:hover {
-
-    background:
-        linear-gradient(
-            135deg,
-            #3b82f6,
-            #0ea5e9
-        );
-
+    background: linear-gradient(
+        135deg,
+        #3b82f6,
+        #0ea5e9
+    );
     border-color: #22d3ee;
-
     box-shadow:
         0 0 12px #22d3ee,
         0 0 25px rgba(34,211,238,0.55);
-
     transform: translateY(-2px);
-
 }
 
 
-/* ==========================================================
-   SELECTBOX
-   ========================================================== */
+/* ============================================================
+   SELECTORES
+   ============================================================ */
 
 div[data-baseweb="select"] > div {
-
-    background: rgba(255,255,255,0.78);
-
+    background: rgba(255,255,255,0.80);
     border: 2px solid #67e8f9;
-
     border-radius: 14px;
-
     color: #164e63;
-
     box-shadow:
         0 0 6px rgba(34,211,238,0.45);
-
 }
 
 
-/* ==========================================================
-   SELECTBOX TEXTO
-   ========================================================== */
-
-div[data-baseweb="select"] span {
-
-    font-family: 'Poppins', sans-serif;
-
-    color: #164e63;
-
-}
-
-
-/* ==========================================================
-   CHECKBOX
-   ========================================================== */
-
-.stCheckbox {
-
-    font-family: 'Poppins', sans-serif;
-
-    color: #164e63;
-
-    font-weight: 500;
-
-}
-
-
-/* ==========================================================
+/* ============================================================
    SIDEBAR
-   ========================================================== */
+   ============================================================ */
 
 section[data-testid="stSidebar"] {
-
-    background:
-        linear-gradient(
-            180deg,
-            #fbcfe8 0%,
-            #dbeafe 100%
-        );
-
-    border-right:
-        2px solid #67e8f9;
-
+    background: linear-gradient(
+        180deg,
+        #fbcfe8 0%,
+        #dbeafe 100%
+    );
+    border-right: 2px solid #67e8f9;
     box-shadow:
         0 0 15px rgba(34,211,238,0.35);
-
 }
-
-
-/* ==========================================================
-   TÍTULO SIDEBAR
-   ========================================================== */
 
 .sidebar-title {
-
-    font-family: 'Poppins', sans-serif;
-
     font-size: 26px;
-
     font-weight: 800;
-
     color: #164e63;
-
 }
-
-
-/* ==========================================================
-   TEXTO SIDEBAR
-   ========================================================== */
 
 .sidebar-text {
-
-    font-family: 'Poppins', sans-serif;
-
     color: #334155;
-
     line-height: 1.7;
-
     font-size: 15px;
-
 }
 
 
-/* ==========================================================
+/* ============================================================
    RESULTADO
-   ========================================================== */
+   ============================================================ */
 
 .result-title {
-
-    font-family: 'Poppins', sans-serif;
-
     font-size: 24px;
-
     font-weight: 700;
-
     color: #0891b2;
-
     margin-bottom: 12px;
-
 }
 
 
-/* ==========================================================
-   MENSAJE SUCCESS
-   ========================================================== */
+/* ============================================================
+   CHECKBOX
+   ============================================================ */
+
+.stCheckbox {
+    color: #164e63;
+    font-weight: 500;
+}
+
+
+/* ============================================================
+   ALERTAS
+   ============================================================ */
 
 div[data-testid="stAlert"] {
-
     border-radius: 15px;
-
-    font-family: 'Poppins', sans-serif;
-
-}
-
-
-/* ==========================================================
-   AUDIO
-   ========================================================== */
-
-audio {
-
-    width: 100%;
-
-}
-
-
-/* ==========================================================
-   SEPARADORES
-   ========================================================== */
-
-hr {
-
-    border-color: #67e8f9;
-
-    opacity: 0.6;
-
 }
 
 </style>
@@ -439,6 +245,7 @@ hr {
 
 with st.sidebar:
 
+```
 st.markdown(
     '<div class="sidebar-title">🎤 Traductor</div>',
     unsafe_allow_html=True
@@ -458,7 +265,7 @@ st.markdown(
 
     <br><br>
 
-    2. Espera la señal y habla claramente.
+    2. Habla claramente.
 
     <br><br>
 
@@ -474,7 +281,7 @@ st.markdown(
 
     <br><br>
 
-    6. Escucha el resultado traducido.
+    6. Escucha el resultado.
 
     </div>
     """,
@@ -504,17 +311,15 @@ unsafe_allow_html=True
 
 # ============================================================
 
-# IMAGEN ORIGINAL
+# IMAGEN
 
 # ============================================================
 
-col_img, col_info = st.columns([1, 1.4])
+col_img, col_info = st.columns([1, 1.5])
 
 with col_img:
 
 ```
-# NO SE MODIFICA LA IMAGEN
-
 image = Image.open("traduccion.jpg")
 
 st.image(
@@ -535,11 +340,9 @@ st.markdown(
     </div>
 
     <div class="text-box">
-
     Presiona el botón y habla lo que deseas traducir.
     La aplicación reconocerá tu voz y posteriormente
     convertirá el texto al idioma seleccionado.
-
     </div>
 
     </div>
@@ -601,8 +404,7 @@ code="""
 
             if (e.results[i].isFinal) {
 
-                value +=
-                    e.results[i][0].transcript;
+                value += e.results[i][0].transcript;
 
             }
 
@@ -668,7 +470,7 @@ unsafe_allow_html=True
 
 # ============================================================
 
-# PROCESAMIENTO DEL TEXTO
+# SI SE RECONOCIÓ VOZ
 
 # ============================================================
 
@@ -699,9 +501,7 @@ st.markdown(
 st.markdown(
     f"""
     <div class="text-box">
-
     {text}
-
     </div>
     """,
     unsafe_allow_html=True
@@ -715,7 +515,7 @@ st.markdown(
 
 
 # ========================================================
-# CARPETA TEMP
+# CARPETA DE AUDIOS
 # ========================================================
 
 os.makedirs(
@@ -732,24 +532,20 @@ translator = Translator()
 # ========================================================
 
 language_codes = {
-
     "Inglés": "en",
-
     "Español": "es",
-
     "Francés": "fr",
-
     "Coreano": "ko",
-
     "Mandarín": "zh-cn",
-
     "Japonés": "ja",
-
     "Alemán": "de",
-
     "Danés": "da"
-
 }
+
+
+languages = list(
+    language_codes.keys()
+)
 
 
 # ========================================================
@@ -768,59 +564,38 @@ st.markdown(
 )
 
 
+# ========================================================
+# COLUMNAS DE IDIOMAS
+# ========================================================
+
 col1, col2 = st.columns(2)
 
-
-# ========================================================
-# IDIOMA DE ENTRADA
-# ========================================================
 
 with col1:
 
     in_lang = st.selectbox(
         "🗣️ Idioma de entrada",
-        (
-            "Inglés",
-            "Español",
-            "Francés",
-            "Coreano",
-            "Mandarín",
-            "Japonés",
-            "Alemán",
-            "Danés"
-        )
+        languages,
+        key="input_language"
     )
 
-
-input_language = (
-    language_codes[in_lang]
-)
-
-
-# ========================================================
-# IDIOMA DE SALIDA
-# ========================================================
 
 with col2:
 
     out_lang = st.selectbox(
         "🌎 Idioma de salida",
-        (
-            "Inglés",
-            "Español",
-            "Francés",
-            "Coreano",
-            "Mandarín",
-            "Japonés",
-            "Alemán",
-            "Danés"
-        )
+        languages,
+        key="output_language"
     )
 
 
-output_language = (
-    language_codes[out_lang]
-)
+input_language = language_codes[
+    in_lang
+]
+
+output_language = language_codes[
+    out_lang
+]
 
 
 # ========================================================
@@ -829,7 +604,7 @@ output_language = (
 
 english_accent = st.selectbox(
     "🔊 Selecciona el acento",
-    (
+    [
         "Defecto",
         "Español",
         "Reino Unido",
@@ -840,30 +615,22 @@ english_accent = st.selectbox(
         "Sudáfrica",
         "Dinamarca",
         "Francia"
-    )
+    ],
+    key="accent"
 )
 
 
 accent_codes = {
 
     "Defecto": "com",
-
     "Español": "com.mx",
-
     "Reino Unido": "co.uk",
-
     "Estados Unidos": "com",
-
     "Canada": "ca",
-
     "Australia": "com.au",
-
     "Irlanda": "ie",
-
     "Sudáfrica": "co.za",
-
     "Dinamarca": "dk",
-
     "Francia": "fr"
 
 }
@@ -898,63 +665,62 @@ def text_to_speech(
     )
 
 
-    trans_text = translation.text
+    translated_text = translation.text
 
 
     tts = gTTS(
-        trans_text,
+        translated_text,
         lang=output_language,
         tld=tld,
         slow=False
     )
 
 
-    # Nombre del archivo
-
-    my_file_name = text[:20]
+    file_name = text[:20]
 
 
-    my_file_name = "".join(
-        c
-        for c in my_file_name
-        if c.isalnum()
-        or c in (" ", "_", "-")
+    file_name = "".join(
+        character
+        for character in file_name
+        if character.isalnum()
+        or character in (" ", "_", "-")
     )
 
 
-    if not my_file_name:
+    if not file_name:
 
-        my_file_name = "audio"
+        file_name = "audio"
 
 
-    my_file_name = (
-        my_file_name.replace(
-            " ",
-            "_"
-        )
+    file_name = file_name.replace(
+        " ",
+        "_"
     )
 
 
     file_path = (
-        f"temp/{my_file_name}.mp3"
+        f"temp/{file_name}.mp3"
     )
 
 
-    tts.save(file_path)
+    tts.save(
+        file_path
+    )
 
 
     return (
-        my_file_name,
-        trans_text
+        file_name,
+        translated_text
     )
 
 
 # ========================================================
-# MOSTRAR TEXTO
+# OPCIÓN MOSTRAR TEXTO
 # ========================================================
 
 display_output_text = st.checkbox(
-    "📝 Mostrar el texto traducido"
+    "📝 Mostrar el texto traducido",
+    key="show_translation"
 )
 
 
@@ -964,7 +730,8 @@ display_output_text = st.checkbox(
 
 if st.button(
     "🌎 CONVERTIR Y TRADUCIR",
-    type="primary"
+    type="primary",
+    key="translate_button"
 ):
 
     try:
@@ -973,13 +740,11 @@ if st.button(
             "Traduciendo..."
         ):
 
-            result_file, output_text = (
-                text_to_speech(
-                    input_language,
-                    output_language,
-                    text,
-                    tld
-                )
+            result_file, output_text = text_to_speech(
+                input_language,
+                output_language,
+                text,
+                tld
             )
 
 
@@ -1014,9 +779,7 @@ if st.button(
             "rb"
         ) as audio_file:
 
-            audio_bytes = (
-                audio_file.read()
-            )
+            audio_bytes = audio_file.read()
 
 
         st.audio(
@@ -1026,7 +789,7 @@ if st.button(
 
 
         # =================================================
-        # TEXTO TRADUCIDO
+        # TEXTO DE SALIDA
         # =================================================
 
         if display_output_text:
@@ -1050,9 +813,7 @@ if st.button(
             st.markdown(
                 f"""
                 <div class="text-box">
-
                 {output_text}
-
                 </div>
                 """,
                 unsafe_allow_html=True
@@ -1086,31 +847,25 @@ def remove_files(days):
 
 ```
 if not os.path.exists("temp"):
-
     return
 
 
-mp3_files = glob.glob(
+files = glob.glob(
     "temp/*.mp3"
 )
 
 
-now = time.time()
+current_time = time.time()
 
 
-seconds = (
-    days * 86400
-)
+max_age = days * 86400
 
 
-for file in mp3_files:
+for file in files:
 
     try:
 
-        if (
-            os.stat(file).st_mtime
-            < now - seconds
-        ):
+        if os.stat(file).st_mtime < current_time - max_age:
 
             os.remove(file)
 
@@ -1120,5 +875,6 @@ for file in mp3_files:
 ```
 
 remove_files(7)
+
 
 
