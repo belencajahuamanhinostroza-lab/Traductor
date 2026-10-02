@@ -1,19 +1,20 @@
 import os
+import time
+import glob
+import html
 import streamlit as st
+
 from bokeh.models.widgets import Button
 from bokeh.models import CustomJS
 from streamlit_bokeh_events import streamlit_bokeh_events
-from PIL import Image
-import time
-import glob
 
 from gtts import gTTS
 from googletrans import Translator
 
 
-# ==================================================
+# =========================================================
 # CONFIGURACIÓN
-# ==================================================
+# =========================================================
 
 st.set_page_config(
     page_title="TRADUCTOR.",
@@ -22,244 +23,611 @@ st.set_page_config(
 )
 
 
-# ==================================================
-# DISEÑO
-# ==================================================
+# =========================================================
+# ESTADOS
+# =========================================================
+
+if "texto" not in st.session_state:
+    st.session_state.texto = ""
+
+if "traduccion" not in st.session_state:
+    st.session_state.traduccion = ""
+
+if "audio" not in st.session_state:
+    st.session_state.audio = None
+
+if "historial" not in st.session_state:
+    st.session_state.historial = []
+
+if "idioma_entrada" not in st.session_state:
+    st.session_state.idioma_entrada = "Español"
+
+if "idioma_salida" not in st.session_state:
+    st.session_state.idioma_salida = "Inglés"
+
+
+# =========================================================
+# COLORES Y DISEÑO
+# =========================================================
 
 st.markdown("""
 <style>
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url(
+'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap'
+);
 
 
-/* ==================================================
-   FONDO GENERAL
-   ================================================== */
+/* =====================================================
+   FONDO
+   ===================================================== */
 
 .stApp {
+
     background:
+
         radial-gradient(
-            circle at 5% 10%,
-            rgba(255, 220, 242, 0.80),
+            circle at 5% 8%,
+            rgba(255, 220, 242, .80),
             transparent 28%
         ),
+
         radial-gradient(
-            circle at 95% 20%,
-            rgba(216, 203, 255, 0.80),
+            circle at 95% 15%,
+            rgba(214, 202, 255, .85),
             transparent 30%
         ),
+
         radial-gradient(
             circle at 50% 100%,
-            rgba(220, 214, 255, 0.70),
+            rgba(217, 218, 255, .70),
             transparent 38%
         ),
+
         linear-gradient(
             135deg,
-            #f9f4ff 0%,
+            #faf5ff 0%,
             #f7f3ff 45%,
-            #fff5fb 100%
+            #fff4fb 100%
         );
 
     min-height: 100vh;
-    font-family: 'Inter', sans-serif;
+
+    font-family:
+        'Inter',
+        sans-serif;
 }
 
 
-/* ==================================================
+/* =====================================================
    CONTENEDOR
-   ================================================== */
+   ===================================================== */
 
 .block-container {
-    max-width: 850px !important;
+
+    max-width: 780px !important;
+
     padding-top: 35px !important;
-    padding-bottom: 60px !important;
+
+    padding-bottom: 70px !important;
 }
 
 
-/* ==================================================
-   TITULOS
-   ================================================== */
+/* =====================================================
+   TEXTO
+   ===================================================== */
 
 h1 {
-    color: #30265c !important;
+
+    color: #30275d !important;
+
     font-weight: 700 !important;
+
     letter-spacing: -1px;
 }
 
+
 h2 {
+
     color: #393064 !important;
-    font-weight: 600 !important;
+
+    font-weight: 650 !important;
 }
+
 
 h3 {
+
     color: #463c70 !important;
+
     font-weight: 600 !important;
 }
 
+
 p {
+
     color: #77718c;
 }
 
 
-/* ==================================================
-   TITULO PRINCIPAL
-   ================================================== */
+/* =====================================================
+   HEADER
+   ===================================================== */
 
-.stTitle {
-    color: #30265c !important;
-}
+.app-header {
 
-
-/* ==================================================
-   IMAGEN
-   MANTIENE TU imagen traduccion.jpg
-   ================================================== */
-
-[data-testid="stImage"] {
     display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 20px;
+}
+
+
+.logo-area {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+}
+
+
+.logo {
+
+    width: 46px;
+
+    height: 46px;
+
+    border-radius: 16px;
+
+    display: flex;
+
+    align-items: center;
+
     justify-content: center;
-    margin: 15px auto 25px auto;
-}
 
-[data-testid="stImage"] img {
-    border-radius: 28px;
-    box-shadow:
-        0 18px 45px rgba(111, 91, 160, 0.15),
-        0 0 0 1px rgba(255,255,255,0.7);
-}
-
-
-/* ==================================================
-   TEXTO
-   ================================================== */
-
-.stMarkdown,
-.stText,
-.stCaption {
-    color: #69627c;
-}
-
-
-/* ==================================================
-   SELECTBOX
-   TODO QUEDA INTEGRADO AL MISMO FONDO
-   ================================================== */
-
-div[data-baseweb="select"] {
-    background: transparent !important;
-}
-
-div[data-baseweb="select"] > div {
     background:
-        rgba(255,255,255,0.35) !important;
+        linear-gradient(
+            135deg,
+            #9870ec,
+            #c28de9
+        );
+
+    color: white;
+
+    font-size: 22px;
+
+    box-shadow:
+        0 10px 25px
+        rgba(137, 94, 204, .25);
+}
+
+
+.brand {
+
+    font-size: 18px;
+
+    font-weight: 700;
+
+    color: #32295d;
+}
+
+
+.brand-sub {
+
+    font-size: 11px;
+
+    color: #9690a8;
+
+    margin-top: 2px;
+}
+
+
+.profile {
+
+    width: 40px;
+
+    height: 40px;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background:
+        rgba(255,255,255,.55);
 
     border:
-        1px solid rgba(255,255,255,0.75) !important;
+        1px solid
+        rgba(255,255,255,.8);
 
-    border-radius: 17px !important;
+    color: #8463c9;
 
     box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.75),
-        0 8px 20px rgba(112, 91, 151, 0.06) !important;
-
-    backdrop-filter: blur(14px);
-
-    color: #40375f !important;
+        0 8px 20px
+        rgba(100,80,130,.08);
 }
 
 
-/* Texto del select */
+/* =====================================================
+   HERO
+   ===================================================== */
+
+.hero {
+
+    padding: 25px;
+
+    border-radius: 30px;
+
+    background:
+        rgba(255,255,255,.42);
+
+    border:
+        1px solid
+        rgba(255,255,255,.78);
+
+    box-shadow:
+        0 20px 50px
+        rgba(103,82,145,.10),
+
+        inset 0 1px 0
+        rgba(255,255,255,.8);
+
+    backdrop-filter:
+        blur(20px);
+
+    text-align: center;
+
+    margin-bottom: 22px;
+}
+
+
+.hero-small {
+
+    font-size: 10px;
+
+    letter-spacing: 2px;
+
+    color: #8975b6;
+
+    font-weight: 600;
+}
+
+
+.hero-title {
+
+    font-size: 26px;
+
+    color: #332b60;
+
+    font-weight: 700;
+
+    margin-top: 7px;
+}
+
+
+.hero-description {
+
+    color: #928ca4;
+
+    font-size: 13px;
+
+    margin-top: 4px;
+}
+
+
+/* =====================================================
+   ORBE
+   ===================================================== */
+
+.orb-area {
+
+    height: 220px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+}
+
+
+.orb {
+
+    width: 145px;
+
+    height: 145px;
+
+    border-radius: 50%;
+
+    background:
+
+        radial-gradient(
+            circle at 25% 25%,
+            #ffffff,
+            transparent 18%
+        ),
+
+        radial-gradient(
+            circle at 70% 30%,
+            #d7baff,
+            transparent 42%
+        ),
+
+        radial-gradient(
+            circle at 30% 70%,
+            #9c81e7,
+            transparent 52%
+        ),
+
+        linear-gradient(
+            135deg,
+            #bda5ff,
+            #e5b6ef,
+            #91a7f1
+        );
+
+    box-shadow:
+
+        inset -18px -18px 35px
+        rgba(72,52,130,.15),
+
+        inset 15px 12px 25px
+        rgba(255,255,255,.65),
+
+        0 25px 40px
+        rgba(125,88,190,.22);
+
+    animation:
+        floating 4s ease-in-out infinite;
+}
+
+
+@keyframes floating {
+
+    0%,100% {
+
+        transform:
+            translateY(0px)
+            rotate(0deg);
+
+    }
+
+    50% {
+
+        transform:
+            translateY(-8px)
+            rotate(3deg);
+
+    }
+}
+
+
+/* =====================================================
+   BOTÓN MICRO
+   ===================================================== */
+
+.mic-decoration {
+
+    width: 62px;
+
+    height: 62px;
+
+    margin:
+        -5px auto 0;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background:
+        linear-gradient(
+            135deg,
+            #9970eb,
+            #bf8be9
+        );
+
+    color: white;
+
+    font-size: 25px;
+
+    box-shadow:
+
+        0 10px 25px
+        rgba(137,94,204,.28),
+
+        0 0 0 8px
+        rgba(177,143,235,.12);
+}
+
+
+/* =====================================================
+   SECCIONES
+   ===================================================== */
+
+.section-title {
+
+    color: #40366b;
+
+    font-size: 15px;
+
+    font-weight: 650;
+
+    margin:
+        20px 2px 9px;
+}
+
+
+/* =====================================================
+   TARJETAS
+   ===================================================== */
+
+.glass-card {
+
+    padding: 18px;
+
+    border-radius: 22px;
+
+    background:
+        rgba(255,255,255,.42);
+
+    border:
+        1px solid
+        rgba(255,255,255,.78);
+
+    box-shadow:
+
+        0 12px 30px
+        rgba(100,80,130,.07),
+
+        inset 0 1px 0
+        rgba(255,255,255,.7);
+
+    backdrop-filter:
+        blur(15px);
+
+    margin-bottom: 12px;
+}
+
+
+.card-label {
+
+    color: #958da8;
+
+    font-size: 9px;
+
+    letter-spacing: 1.3px;
+
+    text-transform: uppercase;
+
+    margin-bottom: 7px;
+}
+
+
+.card-text {
+
+    color: #38314d;
+
+    font-size: 16px;
+
+    line-height: 1.5;
+}
+
+
+/* =====================================================
+   SELECTBOX
+   ===================================================== */
+
+div[data-baseweb="select"] {
+
+    background:
+        transparent !important;
+}
+
+
+div[data-baseweb="select"] > div {
+
+    background:
+        rgba(255,255,255,.30) !important;
+
+    border:
+        1px solid
+        rgba(255,255,255,.75) !important;
+
+    border-radius:
+        17px !important;
+
+    box-shadow:
+
+        inset 0 1px 0
+        rgba(255,255,255,.75),
+
+        0 7px 20px
+        rgba(110,88,150,.05) !important;
+
+    color:
+        #40375f !important;
+}
+
 
 div[data-baseweb="select"] span {
-    color: #40375f !important;
+
+    color:
+        #40375f !important;
 }
 
 
-/* ==================================================
-   CHECKBOX
-   ================================================== */
-
-[data-testid="stCheckbox"] {
-    color: #5d5473 !important;
-}
-
-[data-testid="stCheckbox"] label {
-    color: #5d5473 !important;
-}
-
-
-/* ==================================================
+/* =====================================================
    BOTONES
-   ================================================== */
+   ===================================================== */
 
 .stButton > button {
 
     width: 100%;
 
-    min-height: 52px;
+    min-height: 50px;
 
     border-radius: 18px;
 
-    border: 1px solid
-        rgba(255,255,255,0.75);
+    border:
+        1px solid
+        rgba(255,255,255,.75);
 
     background:
         linear-gradient(
             135deg,
-            #9b72ed,
-            #bd8be9
+            #9970eb,
+            #bd89e9
         );
 
     color: white;
-
-    font-family: 'Inter', sans-serif;
 
     font-size: 14px;
 
     font-weight: 600;
 
-    letter-spacing: 0.1px;
-
     box-shadow:
-        0 10px 25px
-        rgba(137, 94, 204, 0.25);
+        0 10px 24px
+        rgba(137,94,204,.24);
 
     transition:
-        all 0.2s ease;
+        .2s ease;
 }
 
 
 .stButton > button:hover {
 
-    background:
-        linear-gradient(
-            135deg,
-            #a27af0,
-            #c18fe9
-        );
-
     transform:
         translateY(-2px);
 
+    color: white;
+
     box-shadow:
         0 14px 30px
-        rgba(137, 94, 204, 0.30);
-
-    color: white;
+        rgba(137,94,204,.30);
 }
 
 
 .stButton > button:active {
 
     transform:
-        scale(0.98);
-
+        scale(.98);
 }
 
 
-/* ==================================================
-   BOTÓN BOKEH DE ESCUCHAR
-   ================================================== */
+/* =====================================================
+   BOKEH
+   ===================================================== */
 
 .bk-btn {
 
@@ -271,52 +639,111 @@ div[data-baseweb="select"] span {
 
     border:
         1px solid
-        rgba(255,255,255,0.75) !important;
+        rgba(255,255,255,.75) !important;
 
     background:
         linear-gradient(
             135deg,
-            #9a70eb,
-            #bc88e8
+            #9970eb,
+            #bd89e9
         ) !important;
 
-    color: white !important;
+    color:
+        white !important;
 
     font-family:
         'Inter',
         sans-serif !important;
 
-    font-size: 14px !important;
+    font-size:
+        14px !important;
 
-    font-weight: 600 !important;
+    font-weight:
+        600 !important;
 
     box-shadow:
-        0 10px 25px
-        rgba(137, 94, 204, 0.25) !important;
-
+        0 10px 24px
+        rgba(137,94,204,.24) !important;
 }
 
 
-/* ==================================================
+/* =====================================================
+   BOTÓN SECUNDARIO
+   ===================================================== */
+
+.secondary-button button {
+
+    background:
+        rgba(255,255,255,.40) !important;
+
+    color:
+        #6c5b9a !important;
+
+    box-shadow:
+        none !important;
+}
+
+
+/* =====================================================
    AUDIO
-   ================================================== */
+   ===================================================== */
 
 audio {
 
     width: 100%;
 
-    border-radius: 18px;
+    border-radius: 16px;
 
-    box-shadow:
-        0 8px 20px
-        rgba(90, 75, 120, 0.10);
-
+    margin-top: 5px;
 }
 
 
-/* ==================================================
+/* =====================================================
+   HISTORIAL
+   ===================================================== */
+
+.history-item {
+
+    padding: 13px 15px;
+
+    border-radius: 17px;
+
+    background:
+        rgba(255,255,255,.32);
+
+    border:
+        1px solid
+        rgba(255,255,255,.60);
+
+    margin-bottom: 8px;
+}
+
+
+.history-languages {
+
+    font-size: 9px;
+
+    color: #8d7db2;
+
+    letter-spacing: .8px;
+
+    text-transform: uppercase;
+}
+
+
+.history-text {
+
+    color: #514866;
+
+    font-size: 12px;
+
+    margin-top: 4px;
+}
+
+
+/* =====================================================
    SIDEBAR
-   ================================================== */
+   ===================================================== */
 
 section[data-testid="stSidebar"] {
 
@@ -324,101 +751,85 @@ section[data-testid="stSidebar"] {
         linear-gradient(
             160deg,
             #f8f1ff,
-            #fff4fa
+            #fff3fa
         );
-
-    border-right:
-        1px solid
-        rgba(255,255,255,0.7);
-
 }
 
 
 section[data-testid="stSidebar"] h2,
 section[data-testid="stSidebar"] h3 {
 
-    color: #403467 !important;
-
+    color:
+        #403467 !important;
 }
 
 
 section[data-testid="stSidebar"] p {
 
-    color: #77718a !important;
-
+    color:
+        #77718a !important;
 }
 
 
-/* ==================================================
-   CAJAS DE INFORMACIÓN
-   ================================================== */
+/* =====================================================
+   CHECKBOX
+   ===================================================== */
+
+[data-testid="stCheckbox"] label {
+
+    color:
+        #625975 !important;
+}
+
+
+/* =====================================================
+   ALERTAS
+   ===================================================== */
 
 .stAlert {
 
-    border-radius: 18px !important;
+    border-radius:
+        17px !important;
 
     background:
-        rgba(255,255,255,0.45) !important;
-
-    border:
-        1px solid
-        rgba(255,255,255,0.7) !important;
-
+        rgba(255,255,255,.42) !important;
 }
 
 
-/* ==================================================
-   TEXTO RECONOCIDO
-   ================================================== */
-
-[data-testid="stText"] {
-
-    background:
-        rgba(255,255,255,0.35);
-
-    border-radius: 18px;
-
-}
-
-
-/* ==================================================
-   SEPARADORES
-   ================================================== */
-
-hr {
-
-    border: none;
-
-    height: 1px;
-
-    background:
-        linear-gradient(
-            90deg,
-            transparent,
-            rgba(145,120,190,0.18),
-            transparent
-        );
-
-}
-
-
-/* ==================================================
+/* =====================================================
    MOBILE
-   ================================================== */
+   ===================================================== */
 
 @media (max-width: 700px) {
 
     .block-container {
 
-        padding-left: 20px !important;
-        padding-right: 20px !important;
+        padding-left:
+            18px !important;
 
+        padding-right:
+            18px !important;
     }
 
-    h1 {
 
-        font-size: 30px !important;
+    .hero {
 
+        padding:
+            22px 17px;
+    }
+
+
+    .hero-title {
+
+        font-size:
+            23px;
+    }
+
+
+    .orb-area {
+
+        height:
+            195px;
     }
 
 }
@@ -427,116 +838,220 @@ hr {
 """, unsafe_allow_html=True)
 
 
-# ==================================================
-# TU CÓDIGO ORIGINAL
-# ==================================================
+# =========================================================
+# HEADER DE LA APP
+# =========================================================
 
-st.title("TRADUCTOR.")
+st.markdown("""
+<div class="app-header">
 
-st.subheader("Escucho lo que quieres traducir.")
+    <div class="logo-area">
+
+        <div class="logo">
+            ✦
+        </div>
+
+        <div>
+
+            <div class="brand">
+                TRADUCTOR.
+            </div>
+
+            <div class="brand-sub">
+                Traducción inteligente por voz
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="profile">
+        ◉
+    </div>
+
+</div>
+""", unsafe_allow_html=True)
 
 
-# ==================================================
+# =========================================================
+# HERO
+# =========================================================
+
+st.markdown("""
+<div class="hero">
+
+    <div class="hero-small">
+        TRADUCCIÓN POR VOZ
+    </div>
+
+    <div class="hero-title">
+        Escucho lo que quieres traducir
+    </div>
+
+    <div class="hero-description">
+        Habla naturalmente y convierte tu voz en texto
+    </div>
+
+    <div class="orb-area">
+        <div class="orb"></div>
+    </div>
+
+    <div class="mic-decoration">
+        🎙️
+    </div>
+
+</div>
+""", unsafe_allow_html=True)
+
+
+# =========================================================
 # IMAGEN ORIGINAL
-# ==================================================
+# =========================================================
 
-image = Image.open('traduccion.jpg')
+try:
 
-st.image(image, width=300)
+    image = Image.open("traduccion.jpg")
+
+    st.image(
+        image,
+        width=300
+    )
+
+except:
+
+    pass
 
 
-# ==================================================
-# SIDEBAR ORIGINAL
-# ==================================================
+# =========================================================
+# SIDEBAR
+# =========================================================
 
 with st.sidebar:
 
-    st.subheader("Traductor.")
+    st.subheader("🎙️ Traductor")
 
     st.write(
-        "Presiona el botón, cuando escuches la señal "
-        "habla lo que quieres traducir, luego selecciona "
-        "la configuración de lenguaje que necesites."
+        "Presiona el botón y habla cuando escuches "
+        "la señal. Luego selecciona el idioma "
+        "que deseas traducir."
+    )
+
+    st.markdown("---")
+
+    st.write("✨ Consejos")
+
+    st.write(
+        "• Habla con claridad."
+    )
+
+    st.write(
+        "• Evita hablar demasiado rápido."
+    )
+
+    st.write(
+        "• Puedes cambiar los idiomas."
     )
 
 
-# ==================================================
-# TEXTO
-# ==================================================
+# =========================================================
+# ESCUCHAR
+# =========================================================
 
-st.write(
-    "Toca el Botón y habla lo que quires traducir"
+st.markdown(
+    '<div class="section-title">Escuchar</div>',
+    unsafe_allow_html=True
 )
 
-
-# ==================================================
-# BOTÓN DE VOZ
-# ==================================================
 
 stt_button = Button(
-    label=" Escuchar  🎤",
-    width=300,
-    height=50
+    label="🎙️  Escuchar y convertir a texto",
+    width=500,
+    height=55
 )
 
+
+# =========================================================
+# RECONOCIMIENTO DE VOZ
+# ESTA ES LA FUNCIÓN PRINCIPAL
+# =========================================================
 
 stt_button.js_on_event(
     "button_click",
+
     CustomJS(code="""
 
         var recognition =
             new webkitSpeechRecognition();
 
-        recognition.continuous = false;
+        recognition.continuous =
+            false;
 
-        recognition.interimResults = true;
+        recognition.interimResults =
+            true;
 
-        recognition.lang = 'es-ES';
+        recognition.lang =
+            'es-ES';
 
 
-        recognition.onresult = function (e) {
+        recognition.onresult =
+            function(e) {
 
-            var value = "";
+                var value = "";
 
-            for (
-                var i = e.resultIndex;
-                i < e.results.length;
-                ++i
-            ) {
+                for (
+                    var i = e.resultIndex;
+                    i < e.results.length;
+                    ++i
+                ) {
 
-                if (e.results[i].isFinal) {
+                    if (
+                        e.results[i].isFinal
+                    ) {
 
-                    value +=
-                        e.results[i][0].transcript;
+                        value +=
+                            e.results[i][0]
+                            .transcript;
+
+                    }
 
                 }
 
-            }
+
+                if (value != "") {
+
+                    document.dispatchEvent(
+                        new CustomEvent(
+                            "GET_TEXT",
+                            {
+                                detail: value
+                            }
+                        )
+                    );
+
+                }
+
+            };
 
 
-            if (value != "") {
+        recognition.onend =
+            function() {
 
-                document.dispatchEvent(
-                    new CustomEvent(
-                        "GET_TEXT",
-                        {
-                            detail: value
-                        }
-                    )
+                console.log(
+                    "Reconocimiento terminado"
                 );
 
-            }
-
-        };
+            };
 
 
-        recognition.onend = function() {
+        recognition.onerror =
+            function(event) {
 
-            console.log(
-                "Reconocimiento detenido"
-            );
+                console.log(
+                    "Error:",
+                    event.error
+                );
 
-        };
+            };
 
 
         recognition.start();
@@ -558,358 +1073,613 @@ result = streamlit_bokeh_events(
     override_height=75,
 
     debounce_time=0
-
 )
 
 
-# ==================================================
-# RESULTADO
-# ==================================================
+# =========================================================
+# GUARDAR VOZ COMO TEXTO
+# =========================================================
 
 if result:
 
     if "GET_TEXT" in result:
 
-        st.write(
+        st.session_state.texto = (
             result.get("GET_TEXT")
         )
 
 
-    try:
+# =========================================================
+# TEXTO DETECTADO
+# =========================================================
 
-        os.mkdir("temp")
+if st.session_state.texto:
 
-    except:
-
-        pass
-
-
-    # ==================================================
-    # TEXTO A AUDIO
-    # ==================================================
-
-    st.title("Texto a Audio")
-
-
-    translator = Translator()
-
-
-    text = str(
-        result.get("GET_TEXT")
+    st.markdown(
+        '<div class="section-title">'
+        'Lo que dijiste'
+        '</div>',
+        unsafe_allow_html=True
     )
 
 
-    # ==================================================
-    # IDIOMA DE ENTRADA
-    # ==================================================
-
-    in_lang = st.selectbox(
-
-        "Selecciona el lenguaje de Entrada",
-
-        (
-            "Inglés",
-            "Español",
-            "Francés",
-            "Coreano",
-            "Mandarín",
-            "Japonés",
-            "Alemán",
-            "Danés"
-        ),
-
+    texto_seguro = html.escape(
+        st.session_state.texto
     )
 
 
-    if in_lang == "Inglés":
+    st.markdown(
+        f"""
+        <div class="glass-card">
 
-        input_language = "en"
+            <div class="card-label">
+                🎙️ TEXTO DETECTADO
+            </div>
 
-    elif in_lang == "Español":
+            <div class="card-text">
+                {texto_seguro}
+            </div>
 
-        input_language = "es"
-
-    elif in_lang == "Francés":
-
-        input_language = "fr"
-
-    elif in_lang == "Coreano":
-
-        input_language = "ko"
-
-    elif in_lang == "Mandarín":
-
-        input_language = "zh-cn"
-
-    elif in_lang == "Japonés":
-
-        input_language = "ja"
-
-    elif in_lang == "Alemán":
-
-        input_language = "de"
-
-    elif in_lang == "Danés":
-
-        input_language = "da"
-
-
-    # ==================================================
-    # IDIOMA DE SALIDA
-    # ==================================================
-
-    out_lang = st.selectbox(
-
-        "Selecciona el lenguaje de salida",
-
-        (
-            "Inglés",
-            "Español",
-            "Francés",
-            "Coreano",
-            "Mandarín",
-            "Japonés",
-            "Alemán",
-            "Danés"
-        ),
-
+        </div>
+        """,
+        unsafe_allow_html=True
     )
 
 
-    if out_lang == "Inglés":
+    # =====================================================
+    # ACCIONES
+    # =====================================================
 
-        output_language = "en"
-
-    elif out_lang == "Español":
-
-        output_language = "es"
-
-    elif out_lang == "Frances":
-
-        output_language = "fr"
-
-    elif out_lang == "Coreano":
-
-        output_language = "ko"
-
-    elif out_lang == "Mandarín":
-
-        output_language = "zh-cn"
-
-    elif out_lang == "Japonés":
-
-        output_language = "ja"
-
-    elif out_lang == "Alemán":
-
-        out_language = "de"
-
-    elif out_lang == "Danés":
-
-        out_language = "da"
+    col1, col2 = st.columns(2)
 
 
-    # ==================================================
+    with col1:
+
+        if st.button(
+            "🗑️ Limpiar texto"
+        ):
+
+            st.session_state.texto = ""
+
+            st.session_state.traduccion = ""
+
+            st.session_state.audio = None
+
+            st.rerun()
+
+
+    with col2:
+
+        st.markdown(
+            '<div class="secondary-button">',
+            unsafe_allow_html=True
+        )
+
+        st.button(
+            "🔄 Nueva grabación"
+        )
+
+        st.markdown(
+            '</div>',
+            unsafe_allow_html=True
+        )
+
+
+# =========================================================
+# TRADUCCIÓN
+# =========================================================
+
+if st.session_state.texto:
+
+    st.markdown(
+        '<div class="section-title">'
+        'Configura tu traducción'
+        '</div>',
+        unsafe_allow_html=True
+    )
+
+
+    languages = {
+
+        "Español": "es",
+
+        "Inglés": "en",
+
+        "Francés": "fr",
+
+        "Coreano": "ko",
+
+        "Mandarín": "zh-cn",
+
+        "Japonés": "ja",
+
+        "Alemán": "de",
+
+        "Danés": "da"
+
+    }
+
+
+    # =====================================================
+    # IDIOMAS
+    # =====================================================
+
+    col1, col2 = st.columns(2)
+
+
+    with col1:
+
+        st.markdown(
+            """
+            <div class="card-label">
+                IDIOMA DE ENTRADA
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+
+        input_name = st.selectbox(
+
+            "Entrada",
+
+            list(languages.keys()),
+
+            index=list(
+                languages.keys()
+            ).index(
+                st.session_state.idioma_entrada
+            ),
+
+            label_visibility="collapsed"
+
+        )
+
+
+    with col2:
+
+        st.markdown(
+            """
+            <div class="card-label">
+                IDIOMA DE SALIDA
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+
+        output_name = st.selectbox(
+
+            "Salida",
+
+            list(languages.keys()),
+
+            index=list(
+                languages.keys()
+            ).index(
+                st.session_state.idioma_salida
+            ),
+
+            label_visibility="collapsed"
+
+        )
+
+
+    st.session_state.idioma_entrada = input_name
+
+    st.session_state.idioma_salida = output_name
+
+
+    input_language = languages[input_name]
+
+    output_language = languages[output_name]
+
+
+    # =====================================================
+    # INTERCAMBIAR
+    # =====================================================
+
+    if st.button(
+        "⇄  Intercambiar idiomas"
+    ):
+
+        temp = (
+            st.session_state.idioma_entrada
+        )
+
+        st.session_state.idioma_entrada = (
+            st.session_state.idioma_salida
+        )
+
+        st.session_state.idioma_salida = temp
+
+        st.rerun()
+
+
+    # =====================================================
     # ACENTO
-    # ==================================================
+    # =====================================================
+
+    st.markdown(
+        """
+        <div class="card-label"
+             style="margin-top:18px;">
+            ACENTO DE VOZ
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+    accents = {
+
+        "Predeterminado": "com",
+
+        "Español": "com.mx",
+
+        "Reino Unido": "co.uk",
+
+        "Estados Unidos": "com",
+
+        "Canadá": "ca",
+
+        "Australia": "com.au",
+
+        "Irlanda": "ie",
+
+        "Sudáfrica": "co.za",
+
+        "Alemania": "de",
+
+        "Francia": "fr",
+
+        "Dinamarca": "dk"
+
+    }
+
 
     english_accent = st.selectbox(
 
-        "Selecciona el acento",
+        "Acento",
 
-        (
-            "Defecto",
-            "Español",
-            "Reino Unido",
-            "Estados Unidos",
-            "Canada",
-            "Australia",
-            "Irlanda",
-            "Sudáfrica",
-            "Dinamarca",
-            "Francia",
-        ),
+        list(accents.keys()),
+
+        label_visibility="collapsed"
 
     )
 
 
-    if english_accent == "Defecto":
-
-        tld = "com"
-
-    elif english_accent == "Español":
-
-        tld = "com.mx"
-
-    elif english_accent == "Reino Unido":
-
-        tld = "co.uk"
-
-    elif english_accent == "Estados Unidos":
-
-        tld = "com"
-
-    elif english_accent == "Canada":
-
-        tld = "ca"
-
-    elif english_accent == "Australia":
-
-        tld = "com.au"
-
-    elif english_accent == "Irlanda":
-
-        tld = "ie"
-
-    elif english_accent == "Sudáfrica":
-
-        tld = "co.za"
-
-    elif english_accent == "Alemania":
-
-        tld = "de"
-
-    elif english_accent == "Francia":
-
-        tld = "fr"
-
-    elif english_accent == "Dinamarca":
-
-        tld = "dk"
+    tld = accents[
+        english_accent
+    ]
 
 
-    # ==================================================
-    # FUNCIÓN DE TEXTO A VOZ
-    # ==================================================
+    # =====================================================
+    # CONVERTIR
+    # =====================================================
 
-    def text_to_speech(
-        input_language,
-        output_language,
-        text,
-        tld
+    st.markdown("<br>", unsafe_allow_html=True)
+
+
+    if st.button(
+        "✦  Traducir y generar audio"
     ):
-
-        translation = translator.translate(
-            text,
-            src=input_language,
-            dest=output_language
-        )
-
-        trans_text = translation.text
-
-
-        tts = gTTS(
-            trans_text,
-            lang=output_language,
-            tld=tld,
-            slow=False
-        )
-
 
         try:
 
-            my_file_name = text[0:20]
-
-        except:
-
-            my_file_name = "audio"
+            translator = Translator()
 
 
-        tts.save(
-            f"temp/{my_file_name}.mp3"
-        )
+            text = (
+                st.session_state.texto
+            )
 
 
-        return my_file_name, trans_text
+            translation = translator.translate(
+
+                text,
+
+                src=input_language,
+
+                dest=output_language
+
+            )
 
 
-    # ==================================================
-    # MOSTRAR TEXTO
-    # ==================================================
+            trans_text = (
+                translation.text
+            )
 
-    display_output_text = st.checkbox(
-        "Mostrar el texto"
+
+            os.makedirs(
+                "temp",
+                exist_ok=True
+            )
+
+
+            # ---------------------------------------------
+            # NOMBRE SEGURO
+            # ---------------------------------------------
+
+            safe_name = ""
+
+            for char in text[:20]:
+
+                if (
+                    char.isalnum()
+                    or char in (" ", "_", "-")
+                ):
+
+                    safe_name += char
+
+
+            safe_name = (
+                safe_name.strip()
+            )
+
+
+            if not safe_name:
+
+                safe_name = "audio"
+
+
+            # ---------------------------------------------
+            # GENERAR AUDIO
+            # ---------------------------------------------
+
+            tts = gTTS(
+
+                trans_text,
+
+                lang=output_language,
+
+                tld=tld,
+
+                slow=False
+
+            )
+
+
+            file_path = (
+                f"temp/{safe_name}.mp3"
+            )
+
+
+            tts.save(
+                file_path
+            )
+
+
+            # ---------------------------------------------
+            # GUARDAR RESULTADOS
+            # ---------------------------------------------
+
+            st.session_state.traduccion = (
+                trans_text
+            )
+
+            st.session_state.audio = (
+                file_path
+            )
+
+
+            # ---------------------------------------------
+            # HISTORIAL
+            # ---------------------------------------------
+
+            nuevo = {
+
+                "entrada":
+                    input_name,
+
+                "salida":
+                    output_name,
+
+                "original":
+                    text,
+
+                "traduccion":
+                    trans_text
+
+            }
+
+
+            st.session_state.historial.insert(
+                0,
+                nuevo
+            )
+
+
+            # Máximo 10 traducciones
+
+            st.session_state.historial = (
+                st.session_state.historial[:10]
+            )
+
+
+            st.success(
+                "✨ Traducción realizada"
+            )
+
+
+        except Exception as e:
+
+            st.error(
+                f"No se pudo realizar la traducción: {e}"
+            )
+
+
+# =========================================================
+# RESULTADO
+# =========================================================
+
+if st.session_state.traduccion:
+
+    st.markdown(
+        '<div class="section-title">'
+        'Resultado'
+        '</div>',
+        unsafe_allow_html=True
     )
 
 
-    # ==================================================
-    # CONVERTIR
-    # ==================================================
+    traduccion_segura = html.escape(
+        st.session_state.traduccion
+    )
 
-    if st.button("convertir"):
 
-        result, output_text = text_to_speech(
+    st.markdown(
+        f"""
+        <div class="glass-card">
 
-            input_language,
-            output_language,
-            text,
-            tld
+            <div class="card-label">
+                ✦ TRADUCCIÓN
+            </div>
 
+            <div class="card-text">
+                {traduccion_segura}
+            </div>
+
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+    # =====================================================
+    # MOSTRAR TEXTO
+    # =====================================================
+
+    display_output_text = st.checkbox(
+        "Mostrar texto de salida"
+    )
+
+
+    if display_output_text:
+
+        st.write(
+            st.session_state.traduccion
         )
 
 
-        audio_file = open(
-            f"temp/{result}.mp3",
-            "rb"
+# =========================================================
+# AUDIO
+# =========================================================
+
+if (
+    st.session_state.audio
+    and os.path.exists(
+        st.session_state.audio
+    )
+):
+
+    st.markdown(
+        '<div class="section-title">'
+        'Escucha la traducción'
+        '</div>',
+        unsafe_allow_html=True
+    )
+
+
+    with open(
+        st.session_state.audio,
+        "rb"
+    ) as audio_file:
+
+        audio_bytes = (
+            audio_file.read()
         )
 
 
-        audio_bytes = audio_file.read()
+    st.audio(
+        audio_bytes,
+        format="audio/mp3"
+    )
+
+
+# =========================================================
+# HISTORIAL
+# =========================================================
+
+if st.session_state.historial:
+
+    st.markdown(
+        '<div class="section-title">'
+        '🕘 Historial reciente'
+        '</div>',
+        unsafe_allow_html=True
+    )
+
+
+    for item in (
+        st.session_state.historial[:5]
+    ):
+
+        original = html.escape(
+            item["original"]
+        )
+
+        translated = html.escape(
+            item["traduccion"]
+        )
 
 
         st.markdown(
-            "## Tú audio:"
+            f"""
+            <div class="history-item">
+
+                <div class="history-languages">
+                    {item["entrada"]}
+                    →
+                    {item["salida"]}
+                </div>
+
+                <div class="history-text">
+                    {original}
+                    →
+                    {translated}
+                </div>
+
+            </div>
+            """,
+            unsafe_allow_html=True
         )
 
 
-        st.audio(
-            audio_bytes,
-            format="audio/mp3",
-            start_time=0
-        )
+# =========================================================
+# LIMPIAR ARCHIVOS ANTIGUOS
+# =========================================================
+
+def remove_files(n):
+
+    mp3_files = glob.glob(
+        "temp/*mp3"
+    )
 
 
-        if display_output_text:
+    if len(mp3_files) != 0:
 
-            st.markdown(
-                "## Texto de salida:"
-            )
+        now = time.time()
 
-            st.write(
-                f" {output_text}"
-            )
+        n_days = n * 86400
 
 
-    # ==================================================
-    # ELIMINAR ARCHIVOS
-    # ==================================================
+        for f in mp3_files:
 
-    def remove_files(n):
+            try:
 
-        mp3_files = glob.glob(
-            "temp/*mp3"
-        )
-
-
-        if len(mp3_files) != 0:
-
-            now = time.time()
-
-            n_days = n * 86400
-
-
-            for f in mp3_files:
-
-                if os.stat(f).st_mtime < now - n_days:
+                if (
+                    os.stat(f).st_mtime
+                    <
+                    now - n_days
+                ):
 
                     os.remove(f)
 
-                    print(
-                        "Deleted ",
-                        f
-                    )
+            except:
+
+                pass
 
 
-    remove_files(7)
-
+remove_files(7)
 
